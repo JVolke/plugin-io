@@ -3,7 +3,6 @@
 namespace IO\Builder\Order;
 
 use IO\Extensions\Filters\ItemNameFilter;
-use IO\Services\SessionStorageService;
 use Plenty\Modules\Basket\Models\Basket;
 use IO\Services\CheckoutService;
 use Plenty\Modules\Frontend\PaymentMethod\Contracts\FrontendPaymentMethodRepositoryContract;
@@ -12,6 +11,7 @@ use Plenty\Modules\Frontend\Services\VatService;
 use Plenty\Modules\Accounting\Vat\Contracts\VatRepositoryContract;
 use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\Accounting\Vat\Models\Vat;
+use Plenty\Modules\Order\Property\Models\OrderPropertyType;
 /**
  * Class OrderItemBuilder
  * @package IO\Builder\Order
@@ -180,6 +180,30 @@ class OrderItemBuilder
             $rebate += $basketDiscount;
         }
 
+        $properties = [];
+        if($basketItem['inputWidth'])
+        {
+            $properties[] = [
+                'typeId' => OrderPropertyType::WIDTH,
+                'value'      => (string)$basketItem['inputWidth']
+            ];
+        }
+        if($basketItem['inputHeight'])
+        {
+            $properties[] = [
+                'typeId' => OrderPropertyType::HEIGHT,
+                'value'      => (string)$basketItem['inputHeight']
+            ];
+        }
+        if($basketItem['inputLength'])
+        {
+            $properties[] = [
+                'typeId' => OrderPropertyType::LENGTH,
+                'value'      => (string)$basketItem['inputLength']
+            ];
+        }
+
+
 		return [
 			"typeId"            => OrderItemType::VARIATION,
 			"referrerId"        => $basketItem['referrerId'],
@@ -190,6 +214,7 @@ class OrderItemBuilder
 			"countryVatId"      => $this->vatService->getCountryVatId(),
 			"vatRate"           => $basketItem['vat'],
             "vatField"			=> $this->getVatField($this->vatService->getVat(), $basketItem['vat']),
+            "properties"        => $properties,
             "orderProperties"   => $basketItemProperties,
 			"amounts"           => [
 				[

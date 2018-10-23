@@ -237,6 +237,8 @@ class BasketService
     private function addVariationData(BasketItem $basketItem, $variationData): array
     {
         $arr              = $basketItem->toArray();
+        //TODO
+        $arr["unitOfMeasurement"] = "";
         $arr["variation"] = $variationData;
         return $arr;
     }
