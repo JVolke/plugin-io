@@ -402,7 +402,7 @@ class ItemService
                     $filter = $filterBuilder
                         ->hasId([$itemId])
                         ->variationIsActive()
-                        ->variationIsVisibleForPlentyId([], [$this->app->getPlentyId()])
+                        //->variationIsVisibleForPlentyId([], [$this->app->getPlentyId()])
                         ->build();
 
                     $contactClassId = $this->sessionStorage->getCustomer()->accountContactClassId;
@@ -536,7 +536,7 @@ class ItemService
 				->hasId([$itemId])
                 ->variationHasRetailPrice()
                 ->variationIsActive()
-                ->variationIsVisibleForPlentyId([], [$this->app->getPlentyId()])
+                //->variationIsVisibleForPlentyId([], [$this->app->getPlentyId()])
                 ->build();
 
             $contactClassId = $this->sessionStorage->getCustomer()->accountContactClassId;
