@@ -43,7 +43,6 @@ class IORouteServiceProvider extends RouteServiceProvider
             $api->get('io/checkout', 'CheckoutResource@index');
             $api->post('io/checkout', 'CheckoutResource@store');
             $api->put('io/checkout', 'CheckoutResource@update');
-            $api->resource('io/category/description', 'CategoryDescriptionResource');
 			$api->resource('io/checkout/payment', 'CheckoutPaymentResource');
 			$api->resource('io/customer', 'CustomerResource');
 			$api->resource('io/customer/address', 'CustomerAddressResource');
@@ -70,6 +69,7 @@ class IORouteServiceProvider extends RouteServiceProvider
             $api->resource('io/cache/reset_template_cache', 'ResetTemplateCacheResource');
             $api->resource('io/shipping/country', 'ShippingCountryResource');
             $api->resource('io/live-shopping', 'LiveShoppingResource');
+            $api->resource('io/facet', 'FacetResource');
 		});
 
 		/*
