@@ -704,6 +704,11 @@ class CustomerService
              */
             $sessionStorage = pluginApp(SessionStorageService::class);
             $email = $sessionStorage->getSessionValue(SessionStorageKeys::GUEST_EMAIL);
+            
+            if(!strlen($email))
+            {
+                throw new \Exception('no guest email address found', 11);
+            }
         }
         else
         {
@@ -749,6 +754,14 @@ class CustomerService
                 $options[] = [
                     'typeId' => AddressOption::TYPE_TELEPHONE,
                     'value'  => $addressData['telephone']
+                ];
+            }
+
+            if(isset($addressData['contactPerson']))
+            {
+                $options[] = [
+                    'typeId' => AddressOption::TYPE_CONTACT_PERSON,
+                    'value'  => $addressData['contactPerson']
                 ];
             }
             
