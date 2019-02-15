@@ -273,7 +273,7 @@ class CustomerService
                 //$this->sessionStorage->setSessionValue(SessionStorageKeys::BILLING_ADDRESS_ID, $newBillingAddress->id);
                 $basketService->setBillingAddressId($newBillingAddress->id);
             }
-            
+
             if($guestDeliveryAddress !== null)
             {
                 $newDeliveryAddress = $this->createAddress(
@@ -283,21 +283,21 @@ class CustomerService
                 //$this->sessionStorage->setSessionValue(SessionStorageKeys::DELIVERY_ADDRESS_ID, $newDeliveryAddress->id);
                 $basketService->setDeliveryAddressId($newDeliveryAddress->id);
             }
-    
+
             if($billingAddressData !== null)
             {
                 $newBillingAddress = $this->createAddress($billingAddressData, AddressType::BILLING);
                 //$this->sessionStorage->setSessionValue(SessionStorageKeys::BILLING_ADDRESS_ID, $newBillingAddress->id);
                 $basketService->setBillingAddressId($newBillingAddress->id);
             }
-    
+
             if($deliveryAddressData !== null)
             {
                 $newDeliveryAddress = $this->createAddress($deliveryAddressData, AddressType::DELIVERY);
                 //$this->sessionStorage->setSessionValue(SessionStorageKeys::DELIVERY_ADDRESS_ID, $newDeliveryAddress->id);
                 $basketService->setDeliveryAddressId($newDeliveryAddress->id);
             }
-    
+
             if($newBillingAddress instanceof Address)
             {
                 $contact = $this->updateContactWithAddressData($newBillingAddress);
@@ -330,7 +330,7 @@ class CustomerService
         $authHelper = pluginApp(AuthHelper::class);
         $contactId = $this->getContactId();
         $accountRepo = $this->accountRepository;
-        
+
         return $authHelper->processUnguarded( function() use ($accountData, $contactId, $accountRepo)
         {
             return $accountRepo->createAccount($accountData, (int)$contactId);
@@ -502,7 +502,7 @@ class CustomerService
             /** @var AuthHelper $authHelper */
             $authHelper = pluginApp(AuthHelper::class);
             $contactRepo = $this->contactRepository;
-            
+
             $contact = $authHelper->processUnguarded( function() use ($newPassword, $contactId, $contactRepo)
             {
                 return $contactRepo->updateContact([
@@ -606,11 +606,11 @@ class CustomerService
 
             if($type == AddressType::BILLING)
             {
-                return $this->addressRepository->findAddressById($basketService->getBillingAddressId());
+                return $this->addressRepository->findAddressById( ((int)$addressId > 0 ? $addressId : $basketService->getBillingAddressId() ) );
             }
             elseif($type == AddressType::DELIVERY)
             {
-                return $this->addressRepository->findAddressById($basketService->getDeliveryAddressId());
+                return $this->addressRepository->findAddressById(((int)$addressId > 0 ? $addressId : $basketService->getDeliveryAddressId() );
             }
         }
 	}
