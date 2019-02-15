@@ -182,7 +182,6 @@ class OrderService
     {
         /** @var CustomerNewsletterService $customerNewsletterService $email */
         $customerNewsletterService = pluginApp(CustomerNewsletterService::class);
-
         $newsletterSubscriptions = $this->sessionStorage->getSessionValue(SessionStorageKeys::NEWSLETTER_SUBSCRIPTIONS);
 
         if (count($newsletterSubscriptions) && strlen($email))
