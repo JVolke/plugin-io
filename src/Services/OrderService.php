@@ -159,7 +159,7 @@ class OrderService
             $this->sendMail(AutomaticEmailTemplate::SHOP_ORDER ,AutomaticEmailOrder::class, $params);
         }
 
-        $this->subscribeToNewsletter($email, $billingAddressId);
+        //$this->subscribeToNewsletter($email, $billingAddressId);
 
         $this->sessionStorage->setSessionValue(SessionStorageKeys::ORDER_CONTACT_WISH, null);
 
