@@ -175,46 +175,6 @@ class OrderService
         return LocalizedOrder::wrap( $order, $this->sessionStorage->getLang() );
 	}
 
-    /**
-     * Subscribe the customer to the newsletter, if stored in the session
-     */
-	public function subscribeToNewsletter($email, $billingAddressId)
-    {
-        /** @var CustomerNewsletterService $customerNewsletterService $email */
-        $customerNewsletterService = pluginApp(CustomerNewsletterService::class);
-        $newsletterSubscriptions = $this->sessionStorage->getSessionValue(SessionStorageKeys::NEWSLETTER_SUBSCRIPTIONS);
-
-        if (count($newsletterSubscriptions) && strlen($email))
-        {
-            $firstName = '';
-            $lastName = '';
-
-            $address = $this->customerService->getAddress($billingAddressId, AddressType::BILLING);
-
-            // if the address is for a company, the contact person will be store into the last name
-            if (strlen($address->name1))
-            {
-                foreach ($address->options as $option)
-                {
-                    if ($option['typeId'] === AddressOption::TYPE_CONTACT_PERSON)
-                    {
-                        $lastName = $option['value'];
-
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                $firstName = $address->name2;
-                $lastName = $address->name3;
-            }
-
-            $customerNewsletterService->saveMultipleNewsletterData($email, $newsletterSubscriptions, $firstName, $lastName);
-        }
-
-        $this->sessionStorage->setSessionValue(SessionStorageKeys::NEWSLETTER_SUBSCRIPTIONS, null);
-    }
 
     /**
      * Execute the payment for a given order.
