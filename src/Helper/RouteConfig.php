@@ -43,7 +43,7 @@ class RouteConfig
             $config = pluginApp(ConfigRepository::class);
             $configValue = $config->get("IO.routing.enabled_routes");
 
-            if ( $configValue === "all" || pluginApp(ShopBuilderRequest::class)->isShopBuilder() )
+            if ( $configValue === "all" )
             {
                 self::$enabledRoutes = [
                     self::BASKET,
