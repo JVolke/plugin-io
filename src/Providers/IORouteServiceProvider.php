@@ -6,6 +6,7 @@ use IO\Helper\RouteConfig;
 use Plenty\Plugin\RouteServiceProvider;
 use Plenty\Plugin\Routing\Router;
 use Plenty\Plugin\Routing\ApiRouter;
+use Plenty\Plugin\Log\Loggable;
 
 /**
  * Class IORouteServiceProvider
@@ -13,6 +14,8 @@ use Plenty\Plugin\Routing\ApiRouter;
  */
 class IORouteServiceProvider extends RouteServiceProvider
 {
+
+	use Loggable;
 	public function register()
 	{
 	}
@@ -102,13 +105,14 @@ class IORouteServiceProvider extends RouteServiceProvider
 
 		if ( RouteConfig::isActive(RouteConfig::CONFIRMATION) )
         {
+						$this->getLogger(__METHOD__)->error("Confirmation");
             //Confiramtion route
             $router->get('confirmation/{orderId?}/{orderAccessKey?}', 'IO\Controllers\ConfirmationController@showConfirmation');
 
-            $router->get('-/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationController@showConfirmation');
-            $router->get('_py-/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationController@showConfirmation');
-            $router->get('_py_/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationController@showConfirmation');
-            $router->get('_plentyShop__/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationController@showConfirmation');
+            $router->get('-/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationEmailController@showConfirmation');
+            $router->get('_py-/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationEmailController@showConfirmation');
+            $router->get('_py_/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationEmailController@showConfirmation');
+            $router->get('_plentyShop__/akQQ{orderAccessKey}/idQQ{orderId}', 'IO\Controllers\ConfirmationEmailController@showConfirmation');
         }
 
 		if ( RouteConfig::isActive(RouteConfig::LOGIN) )
