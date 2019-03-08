@@ -14,6 +14,7 @@ use Plenty\Modules\Order\Date\Models\OrderDate;
 use Plenty\Modules\Order\Date\Models\OrderDateType;
 use Plenty\Modules\Order\Models\Order;
 use Plenty\Plugin\Http\Response;
+use Plenty\Plugin\Log\Loggable;
 
 /**
  * Class ConfirmationController
@@ -21,6 +22,8 @@ use Plenty\Plugin\Http\Response;
  */
 class ConfirmationController extends LayoutController
 {
+
+    use Loggable;
     /**
      * Prepare and render the data for the order confirmation
      * @return string
@@ -28,15 +31,16 @@ class ConfirmationController extends LayoutController
     public function showConfirmation(int $orderId = 0, $orderAccesskey = '')
     {
         $order = null;
-    
+        $this->getLogger(__METHOD__)->error("Confirmation show");
+
         /** @var SessionStorageService $sessionStorageService */
         $sessionStorageService = pluginApp(SessionStorageService::class);
-    
+
         /**
          * @var OrderService $orderService
          */
         $orderService = pluginApp(OrderService::class);
-        
+
         if(strlen($orderAccesskey) && (int)$orderId > 0)
         {
             try
@@ -45,7 +49,7 @@ class ConfirmationController extends LayoutController
             }
             catch(\Exception $e)
             {}
-            
+
             if(!is_null($order) && $order instanceof LocalizedOrder)
             {
                 $sessionStorageService->setSessionValue(SessionStorageKeys::LAST_ACCESSED_ORDER, ['orderId' => $orderId, 'accessKey' => $orderAccesskey]);
@@ -70,7 +74,7 @@ class ConfirmationController extends LayoutController
             }
             catch(\Exception $e) {}
         }
-        
+
         if(is_null($order))
         {
             $lastAccessedOrder = $sessionStorageService->getSessionValue(SessionStorageKeys::LAST_ACCESSED_ORDER);
@@ -83,7 +87,7 @@ class ConfirmationController extends LayoutController
                 catch(\Exception $e) {}
             }
         }
-        
+
         if(!is_null($order) && $order instanceof LocalizedOrder)
         {
             if($this->checkValidity($order->order))
@@ -103,7 +107,7 @@ class ConfirmationController extends LayoutController
                 /** @var Response $response */
                 $response = pluginApp(Response::class);
                 $response->forceStatus(ResponseCode::NOT_FOUND);
-    
+
                 return $response;
             }
         }
@@ -120,28 +124,28 @@ class ConfirmationController extends LayoutController
             return $response;
         }
     }
-    
+
     private function checkValidity(Order $order)
     {
         /** @var TemplateConfigService $templateConfigService */
         $templateConfigService = pluginApp(TemplateConfigService::class);
         $expiration = $templateConfigService->get('my_account.confirmation_link_expiration', 'always');
-        
+
         if($expiration !== 'always')
         {
             $now = time();
-    
+
             $orderDates = $order->dates;
             $orderCreationDate = $orderDates->filter(function($date){
                 return $date->typeId == OrderDateType::ORDER_ENTRY_AT;
             })->first()->date->timestamp;
-    
+
             if($now > $orderCreationDate + ((int)$expiration * (24 * 60 * 60)))
             {
                 return false;
             }
         }
-        
+
         return true;
     }
 }
