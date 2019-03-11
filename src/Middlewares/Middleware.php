@@ -130,7 +130,7 @@ class Middleware extends \Plenty\Plugin\Middleware
         }
     }
 
-    /public function after(Request $request, Response $response):Response
+    public function after(Request $request, Response $response):Response
     {
         if ($response->status() == ResponseCode::NOT_FOUND) {
             /** @var StaticPagesController $controller */
