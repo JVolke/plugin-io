@@ -1,6 +1,7 @@
 <?php //strict
 namespace IO\Controllers;
 
+use IO\Api\ResponseCode;
 use IO\Constants\SessionStorageKeys;
 use IO\Extensions\Constants\ShopUrls;
 use IO\Helper\RouteConfig;
@@ -16,6 +17,7 @@ use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Category\Models\Category;
 use Plenty\Modules\ShopBuilder\Helper\ShopBuilderRequest;
 use Plenty\Plugin\Application;
+use Plenty\Plugin\Http\Response;
 
 /**
  * Class CheckoutController
@@ -28,7 +30,7 @@ class CheckoutController extends LayoutController
      * @param Category $category
      * @return string
      */
-    public function showCheckout($category = null): string
+    public function showCheckout($category = null)
     {
         /** @var BasketItemRepositoryContract $basketItemRepository */
         $basketItemRepository = pluginApp(BasketItemRepositoryContract::class);
@@ -75,10 +77,10 @@ class CheckoutController extends LayoutController
     public function redirectCheckoutCategory()
     {
         $categoryController = pluginApp(CategoryController::class);
-        $categoryContent = $categoryController->showCategory("checkout");
-        if ( strlen($categoryContent) )
+        $categoryResponse = $categoryController->showCategory("checkout");
+        if ( !($categoryResponse instanceof Response && $categoryResponse->status() == ResponseCode::NOT_FOUND) )
         {
-            return $categoryContent;
+            return $categoryResponse;
         }
 
         /** @var UrlService $urlService */
