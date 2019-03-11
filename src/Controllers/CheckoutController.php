@@ -4,19 +4,13 @@ namespace IO\Controllers;
 use IO\Api\ResponseCode;
 use IO\Constants\SessionStorageKeys;
 use IO\Extensions\Constants\ShopUrls;
-use IO\Helper\RouteConfig;
-use IO\Services\BasketService;
 use IO\Services\CustomerService;
 use IO\Services\SessionStorageService;
-use IO\Services\UrlBuilder\UrlQuery;
 use IO\Services\UrlService;
-use IO\Services\WebstoreConfigurationService;
 use Plenty\Modules\Basket\Contracts\BasketItemRepositoryContract;
 use IO\Guards\AuthGuard;
-use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Category\Models\Category;
 use Plenty\Modules\ShopBuilder\Helper\ShopBuilderRequest;
-use Plenty\Plugin\Application;
 use Plenty\Plugin\Http\Response;
 
 /**
@@ -65,6 +59,7 @@ class CheckoutController extends LayoutController
             return $categoryController->showCategory("checkout");
         }
 
+
         return $this->renderTemplate(
             "tpl.checkout",
             [
@@ -76,9 +71,10 @@ class CheckoutController extends LayoutController
 
     public function redirectCheckoutCategory()
     {
+        /** @var CategoryController $categoryController */
         $categoryController = pluginApp(CategoryController::class);
         $categoryResponse = $categoryController->showCategory("checkout");
-        if ( !($categoryResponse instanceof Response && $categoryResponse->status() == ResponseCode::NOT_FOUND) )
+        if (!($categoryResponse instanceof Response && $categoryResponse->status() == ResponseCode::NOT_FOUND))
         {
             return $categoryResponse;
         }
