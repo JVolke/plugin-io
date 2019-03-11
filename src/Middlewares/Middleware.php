@@ -130,11 +130,11 @@ class Middleware extends \Plenty\Plugin\Middleware
         }
     }
 
-    /*public function after(Request $request, Response $response):Response
+    /public function after(Request $request, Response $response):Response
     {
         if ($response->status() == ResponseCode::NOT_FOUND) {
             /** @var StaticPagesController $controller */
-            /*$controller = pluginApp(StaticPagesController::class);
+            $controller = pluginApp(StaticPagesController::class);
 
             $response = $response->make(
                 $controller->showPageNotFound(),
@@ -146,5 +146,5 @@ class Middleware extends \Plenty\Plugin\Middleware
         }
 
         return $response;
-    }*/
+    }
 }
