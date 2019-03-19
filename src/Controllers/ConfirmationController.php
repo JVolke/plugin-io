@@ -30,8 +30,6 @@ class ConfirmationController extends LayoutController
     public function showConfirmation(int $orderId = 0, $orderAccesskey = '')
     {
         $order = null;
-        $this->getLogger(__METHOD__)->error("Confirmation show");
-
         /** @var SessionStorageService $sessionStorageService */
         $sessionStorageService = pluginApp(SessionStorageService::class);
 
