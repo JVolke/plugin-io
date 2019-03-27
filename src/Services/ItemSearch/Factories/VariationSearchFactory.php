@@ -35,7 +35,6 @@ use Plenty\Modules\Item\Search\Mutators\ImageDomainMutator;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Item\Search\Mutators\VariationPropertyGroupMutator;
 use Plenty\Plugin\Application;
-use IO\Services\ItemSearch\Extensions\ReduceDataExtension;
 
 /**
  * Class VariationSearchFactory
