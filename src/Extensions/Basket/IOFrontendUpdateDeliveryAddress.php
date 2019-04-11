@@ -28,7 +28,7 @@ class IOFrontendUpdateDeliveryAddress
 
         $shippingProfileList = $checkoutService->getShippingProfileList();
         $shippingProfileList = pluginApp(Collection::class, [ $shippingProfileList ]);
-        $selectedShippingProfile = $shippingProfileList->where("parcelServicePresetId", $checkoutService->getShippingProfileId());
+        $selectedShippingProfile = $shippingProfileList->where("parcelServicePresetId", $checkoutService->getShippingProfileId())->first();
 
         $isAddressPostOffice = $selectedDeliveryAddress->address1 === "POSTFILIALE";
         $isAddressParcelBox = $selectedDeliveryAddress->address1 === "PACKSTATION";
@@ -42,11 +42,11 @@ class IOFrontendUpdateDeliveryAddress
 
             if ($isUnsupportedPostOffice)
             {
-                $profileToSelect = $shippingProfileList->where("isPostOffice", true);
+                $profileToSelect = $shippingProfileList->where("isPostOffice", true)->first();
             }
             else
             {
-                $profileToSelect = $shippingProfileList->where("isParcelBox", true);
+                $profileToSelect = $shippingProfileList->where("isParcelBox", true)->first();
             }
 
             if (!is_null($profileToSelect))
