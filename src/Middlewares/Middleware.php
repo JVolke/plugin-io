@@ -3,6 +3,8 @@
 namespace IO\Middlewares;
 
 use IO\Api\ResponseCode;
+use IO\Constants\SessionStorageKeys;
+use IO\Controllers\CheckoutController;
 use IO\Helper\RouteConfig;
 use IO\Services\CountryService;
 use IO\Services\TemplateService;
@@ -23,6 +25,9 @@ class Middleware extends \Plenty\Plugin\Middleware
 {
     public function before(Request $request)
     {
+        /** @var SessionStorageService $sessionService */
+        $sessionService  = pluginApp(SessionStorageService::class);
+        
         $loginToken = $request->get('token', '');
         if(strlen($loginToken))
         {
@@ -38,8 +43,6 @@ class Middleware extends \Plenty\Plugin\Middleware
 
         if (($lang == null || strlen($lang) != 2 || !in_array($lang, $webstoreConfig->languageList)) && strpos(end($splittedURL), '.') === false)
         {
-            $sessionService  = pluginApp(SessionStorageService::class);
-
             if($sessionService->getLang() != $webstoreConfig->defaultLanguage)
             {
                 $service = pluginApp(LocalizationService::class);
@@ -128,6 +131,10 @@ class Middleware extends \Plenty\Plugin\Middleware
         {
             AuthGuard::redirect('/search', ['query' => $request->get('Params')['SearchParam']]);
         }
+        
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = pluginApp(CheckoutService::class);
+        $checkoutService->setReadOnlyCheckout($request->get('readonlyCheckout',0) == 1);
     }
 
     public function after(Request $request, Response $response):Response
