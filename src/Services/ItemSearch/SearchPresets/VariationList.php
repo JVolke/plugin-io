@@ -34,10 +34,6 @@ class VariationList implements SearchPreset
         /** @var VariationSearchFactory $searchFactory */
         $searchFactory = pluginApp( VariationSearchFactory::class );
 
-        $searchFactory->withResultFields(
-                ResultFieldTemplate::get( ResultFieldTemplate::TEMPLATE_LIST_ITEM )
-            );
-
         $searchFactory
             ->withImages()
             ->withPrices()
@@ -47,7 +43,10 @@ class VariationList implements SearchPreset
             ->isVisibleForClient()
             ->isActive()
             ->hasPriceForCustomer()
-            ->withReducedResults();
+            ->withReducedResults()
+            ->withResultFields(
+                    ResultFieldTemplate::get( ResultFieldTemplate::TEMPLATE_LIST_ITEM )
+                );
 
         if ( !array_key_exists('excludeFromCache', $options) || $options['excludeFromCache'] === false )
         {
