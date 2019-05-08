@@ -25,6 +25,7 @@ use Plenty\Modules\Item\Search\Filter\SearchFilter;
 use Plenty\Modules\Item\Search\Sort\NameSorting;
 use Plenty\Plugin\Application;
 use Plenty\Plugin\Log\Loggable;
+
 /**
  * Class BaseSearchFactory
  *
@@ -36,6 +37,7 @@ class BaseSearchFactory
 {
     use LoadResultFields;
     use Loggable;
+
     const SORTING_ORDER_ASC     = ElasticSearch::SORTING_ORDER_ASC;
     const SORTING_ORDER_DESC    = ElasticSearch::SORTING_ORDER_DESC;
     const INHERIT_AGGREGATIONS  = 'aggregations';
@@ -389,6 +391,7 @@ class BaseSearchFactory
         }
         $search->setPage( $this->page, $this->itemsPerPage );
         $search->addSource( $source );
+
         $this->getLogger(__CLASS__)->debug(
             "IO::Debug.BaseSearchFactory_buildSearch",
             [
@@ -401,6 +404,7 @@ class BaseSearchFactory
                 "resultFields"  => $this->resultFields
             ]
         );
+
         return $search;
     }
     /**
@@ -445,6 +449,7 @@ class BaseSearchFactory
             $processor->addMutator( $mutator );
             $mutatorClasses[] = get_class($mutator);
         }
+
         $this->getLogger(__CLASS__)->debug(
             "IO::Debug.BaseSearchFactory_prepareSearch",
             [
