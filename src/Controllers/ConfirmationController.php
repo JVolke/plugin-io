@@ -3,6 +3,7 @@
 namespace IO\Controllers;
 
 use IO\Api\ResponseCode;
+use IO\Middlewares\Middleware;
 use IO\Services\CustomerService;
 use IO\Services\OrderService;
 use IO\Services\SessionStorageService;
@@ -141,6 +142,8 @@ class ConfirmationController extends LayoutController
                 $response = pluginApp(Response::class);
                 $response->forceStatus(ResponseCode::NOT_FOUND);
 
+                Middleware::$FORCE_404 = true;
+
                 return $response;
             }
         }
@@ -154,6 +157,8 @@ class ConfirmationController extends LayoutController
             /** @var Response $response */
             $response = pluginApp(Response::class);
             $response->forceStatus(ResponseCode::NOT_FOUND);
+
+            Middleware::$FORCE_404 = true;
 
             return $response;
         }
