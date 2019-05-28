@@ -34,6 +34,10 @@ class VariationList implements SearchPreset
         /** @var VariationSearchFactory $searchFactory */
         $searchFactory = pluginApp( VariationSearchFactory::class );
 
+        $searchFactory->withResultFields(
+                ResultFieldTemplate::load( ResultFieldTemplate::TEMPLATE_LIST_ITEM )
+            );
+
         $searchFactory
             ->withImages()
             ->withPrices()
