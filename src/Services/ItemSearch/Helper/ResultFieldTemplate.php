@@ -20,6 +20,7 @@ class ResultFieldTemplate
     const TEMPLATE_BASKET_ITEM  = 'IO.ResultFields.BasketItem';
     const TEMPLATE_AUTOCOMPLETE_ITEM_LIST = 'IO.ResultFields.AutoCompleteListItem';
     const TEMPLATE_CATEGORY_TREE = 'IO.ResultFields.CategoryTree';
+    const TEMPLATE_VARIATION_ATTRIBUTE_MAP = 'IO.ResultFields.VariationAttributeMap';
 
     private $templates = [];
     private $requiredFields = [];
@@ -106,7 +107,7 @@ class ResultFieldTemplate
      * @param string|array  $field      If first parameter describes a single template event
      *                                  this parameter may contain a single result field or a list of field to require.
      */
-    public function requireFields( $event, $field )
+    public function requireFields( $event, $field = null )
     {
         if( is_string($event) )
         {
@@ -115,14 +116,14 @@ class ResultFieldTemplate
             {
                 $this->requiredFields[$event][] = $field;
             }
-            else
+            else if ( is_array($field) )
             {
-                $this->requiredFields[$event] = array_merge($this->requiredFields[$event], $field);
+                $this->requiredFields[$event] = array_merge($this->requiredFields[$event], (array) $field);
             }
         }
-        else
+        else if( is_array($event) && is_null($field) )
         {
-            foreach($event as $evt => $fieldList)
+            foreach((array) $event as $evt => $fieldList)
             {
                 $this->requireFields($evt, $fieldList);
             }

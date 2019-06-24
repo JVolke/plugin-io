@@ -13,6 +13,7 @@ use IO\Services\ItemSearch\Extensions\ItemDefaultImage;
 use IO\Services\ItemSearch\Extensions\ItemUrlExtension;
 use IO\Services\ItemSearch\Extensions\PriceSearchExtension;
 use IO\Services\ItemSearch\Extensions\ReduceDataExtension;
+use IO\Services\ItemSearch\Extensions\VariationAttributeMapExtension;
 use IO\Services\ItemSearch\Helper\FacetExtensionContainer;
 use IO\Services\ItemSearch\Mutators\OrderPropertySelectionValueMutator;
 use IO\Services\PriceDetectService;
@@ -262,6 +263,20 @@ class VariationSearchFactory extends BaseSearchFactory
             $variationFilter = $this->createFilter( VariationBaseFilter::class );
             $variationFilter->isHiddenInCategoryList( $isHidden );
         }
+
+        return $this;
+    }
+
+    /**
+     * Filter variations by isSalable flag
+     *
+     * @return $this
+     */
+    public function isSalable()
+    {
+        /** @var VariationBaseFilter $variationFilter */
+        $variationFilter = $this->createFilter( VariationBaseFilter::class );
+        $variationFilter->isSalable();
 
         return $this;
     }
@@ -661,6 +676,18 @@ class VariationSearchFactory extends BaseSearchFactory
         $imageDomainMutator = pluginApp(ImageDomainMutator::class);
         $imageDomainMutator->setClient($clientId);
         $this->withMutator($imageDomainMutator);
+
+        return $this;
+    }
+
+    /**
+     * Includes VariatonAttributeMap for variation select
+     *
+     * @return $this
+     */
+    public function withAttributes()
+    {
+        $this->withExtension( VariationAttributeMapExtension::class );
 
         return $this;
     }
