@@ -220,7 +220,7 @@ class CategoryService
         $categoryUrl = $this->fromMemoryCache(
             "categoryUrl.$category->id.$lang.$webstoreId",
             function() use ($category, $lang, $defaultLanguage, $webstoreId) {
-                if(!$category instanceof Category || $category->details[0] === null)
+                if(!$category instanceof Category || $category->details->first() === null)
                 {
                     return null;
                 }
@@ -381,7 +381,7 @@ class CategoryService
         $categoryDataFilter = pluginApp(CategoryDataFilter::class);
         return $categoryDataFilter->applyResultFields(
             $tree,
-            $this->loadResultFields( ResultFieldTemplate::get( ResultFieldTemplate::TEMPLATE_CATEGORY_TREE ) )
+            ResultFieldTemplate::load( ResultFieldTemplate::TEMPLATE_CATEGORY_TREE )
         );
     }
 
@@ -410,6 +410,94 @@ class CategoryService
     }
 
 
+    public function filterPartialCategoryTree($categoryTree, $categoryId, $dataFields = [], $parents = [], $breadcrumbs = [], $level = 0)
+    {
+        $filteredCategories = [];
+        foreach($categoryTree as $category)
+        {
+            if($category['id'] === (int)$categoryId)
+            {
+                if(in_array('breadcrumbs', $dataFields))
+                {
+                    $breadcrumbs = array_merge($breadcrumbs, $this->filterChildren([$category]));
+                    $filteredCategories['breadcrumbs'] = $breadcrumbs;
+                }
+
+                if(in_array('parents', $dataFields))
+                {
+                    $filteredCategories['parents'] = $parents;
+                }
+
+                if(in_array('current', $dataFields))
+                {
+                    $filteredCategories['current'] = $this->filterChildren($categoryTree, 0);
+                }
+
+                if(in_array('children', $dataFields))
+                {
+                    foreach($categoryTree as $temp)
+                    {
+                        $filteredCategories['children'][$temp['id']] = $this->filterChildren( $temp['children'] ?? [], 0);
+
+                    }
+                }
+            }
+        }
+
+        if(count($filteredCategories) > 0)
+        {
+            return $filteredCategories;
+        }
+
+        foreach($categoryTree as $category)
+        {
+            if(isset($category['children']))
+            {
+                $tempBreadcrumbs = array_merge($breadcrumbs, $this->filterChildren([$category]));
+
+                $tempParents = $this->filterChildren($categoryTree,0);
+                $filteredCategories = $this->filterPartialCategoryTree($category['children'], $categoryId, $dataFields, $tempParents, $tempBreadcrumbs, $level++);
+
+                if (count($filteredCategories) > 0)
+                {
+                    break;
+                }
+            }
+        }
+        return $filteredCategories;
+    }
+
+    private function filterChildren($categories, $skipLevel = 0)
+    {
+        $cleanedCategories = [];
+        foreach($categories as $category)
+        {
+            if($skipLevel === 0 && isset($category['children']))
+            {
+                $category['hasChildren'] = true;
+                unset($category['children']);
+                $cleanedCategories[] = $category;
+            }
+            elseif($skipLevel === 1 && isset($category['children']))
+            {
+                $temp = [];
+                foreach($category['children'] as $children)
+                {
+                    unset($children['children']);
+                    $temp[] = $children;
+                }
+                $category['children'] = $temp;
+                $cleanedCategories[] = $category;
+            }
+            else
+            {
+                $cleanedCategories[] = $category;
+            }
+        }
+
+        return $cleanedCategories;
+    }
+
     /**
      * Return the sitemap list as an array
      * @param string|array  $type Only return categories of given type
@@ -432,7 +520,7 @@ class CategoryService
 
         return $filter->applyResultFields(
             $list,
-            $this->loadResultFields( ResultFieldTemplate::get( ResultFieldTemplate::TEMPLATE_CATEGORY_TREE ) )
+            ResultFieldTemplate::load( ResultFieldTemplate::TEMPLATE_CATEGORY_TREE )
         );
     }
 
