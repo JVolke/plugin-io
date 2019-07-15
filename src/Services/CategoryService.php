@@ -481,11 +481,11 @@ class CategoryService
             elseif($skipLevel === 1 && isset($category['children']))
             {
                 $temp = [];
-                foreach($category['children'] as $children)
+                /* foreach($category['children'] as $children)
                 {
                     unset($children['children']);
                     $temp[] = $children;
-                }
+                }*/
                 $category['children'] = $temp;
                 $cleanedCategories[] = $category;
             }
