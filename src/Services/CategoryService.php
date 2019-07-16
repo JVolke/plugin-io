@@ -472,26 +472,43 @@ class CategoryService
         $cleanedCategories = [];
         foreach($categories as $category)
         {
-            if($skipLevel === 0 && isset($category['children']))
+            if(isset($category['details']))
             {
-                $category['hasChildren'] = true;
-                unset($category['children']);
-                $cleanedCategories[] = $category;
-            }
-            elseif($skipLevel === 1 && isset($category['children']))
-            {
-                $temp = [];
-                /* foreach($category['children'] as $children)
+                $category = json_decode(json_encode($category));
+                if ($skipLevel === 0 && isset($category->children))
                 {
-                    unset($children['children']);
-                    $temp[] = $children;
-                }*/
-                $category['children'] = $temp;
-                $cleanedCategories[] = $category;
-            }
-            else
-            {
-                $cleanedCategories[] = $category;
+                    $detailsExist = false;
+                    foreach ($category->children as $categoryChildren)
+                    {
+                        if (isset($categoryChildren->details))
+                        {
+                            $detailsExist = true;
+                        }
+                    }
+
+                    if ($detailsExist)
+                    {
+                        $category->hasChildren = true;
+                    }
+                    unset($category->children);
+                    $category = json_decode(json_encode($category), true); //Turn it into an array
+                    $cleanedCategories[] = $category;
+                } elseif ($skipLevel === 1 && isset($category->children))
+                {
+                    $temp = [];
+                    foreach ($category->children as $children) {
+                        unset($children['children']);
+                        $temp[] = $children;
+                    }
+                    $category->children = $temp;
+                    $category = json_decode(json_encode($category), true); //Turn it into an array
+
+                    $cleanedCategories[] = $category;
+                } else
+                {
+                    $category = json_decode(json_encode($category), true); //Turn it into an array
+                    $cleanedCategories[] = $category;
+                }
             }
         }
 
