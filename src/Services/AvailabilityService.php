@@ -45,10 +45,10 @@ class AvailabilityService
         for( $i = 1; $i <= 10; $i++ )
         {
 	        $availability = $this->getAvailabilityById( $i );
-	        if($availability instanceof Availability)
-	        {
+	        /*if($availability instanceof Availability)
+	        {*/
 	            array_push( $availabilities, $this->getAvailabilityById( $i ) );
-	        }
+	        /*}*/
         }
         return $availabilities;
     }
