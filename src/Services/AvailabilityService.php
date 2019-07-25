@@ -3,7 +3,7 @@
 namespace IO\Services;
 
 use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
-use Plenty\Modules\Item\Availability\Models\Availability;
+//use Plenty\Modules\Item\Availability\Models\Availability;
 
 /**
  * Class AvailabilityService
