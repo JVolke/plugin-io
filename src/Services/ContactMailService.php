@@ -17,9 +17,8 @@ class ContactMailService
     public function sendMail($mailTemplate, $mailData = [])
     {
         $recipient = $mailData['recipient'];
-        $this->getLogger(__METHOD__)->error("recipient", $recipient);
-        $this->getLogger(__METHOD__)->error("recipient is null", is_null( $recipient ));
-        if ( is_null( $recipient ) )
+        $this->getLogger(__METHOD__)->error("recipient is null", strlen( $recipient ));
+        if ( !strlen( $recipient ) )
         {
             /** @var TemplateConfigService $templateConfigService */
             $templateConfigService = pluginApp(TemplateConfigService::class);
