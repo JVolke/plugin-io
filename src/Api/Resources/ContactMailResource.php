@@ -50,7 +50,7 @@ class ContactMailResource extends ApiResource
         $recaptchaToken = $this->request->get('recaptchaToken', null);
         $recaptchaSecret = $this->templateConfigService->get('global.google_recaptcha_secret');
         $recaptchaApiKey = $this->templateConfigService->get('global.google_recaptcha_api_key');
-        $this->getLogger(__METHOD__)->error("Request:", $this->request-all());
+        $this->getLogger(__METHOD__)->error("Request:", $this->request->all());
 
         if ( $recaptchaToken !== $recaptchaApiKey && !$this->verifyRecaptcha($recaptchaSecret, $recaptchaToken) )
         {
