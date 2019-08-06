@@ -11,6 +11,8 @@ use IO\Api\ApiResource;
 use IO\Api\ApiResponse;
 use IO\Api\ResponseCode;
 use IO\Services\ContactMailService;
+use Plenty\Plugin\Log\Loggable;
+
 
 
 /**
@@ -19,6 +21,8 @@ use IO\Services\ContactMailService;
  */
 class ContactMailResource extends ApiResource
 {
+  use Loggable;
+
     private $contactMailService;
 
     private $templateConfigService;
@@ -46,6 +50,7 @@ class ContactMailResource extends ApiResource
         $recaptchaToken = $this->request->get('recaptchaToken', null);
         $recaptchaSecret = $this->templateConfigService->get('global.google_recaptcha_secret');
         $recaptchaApiKey = $this->templateConfigService->get('global.google_recaptcha_api_key');
+        $this->getLogger(__METHOD__)->error("Request:", $this->request-all());
 
         if ( $recaptchaToken !== $recaptchaApiKey && !$this->verifyRecaptcha($recaptchaSecret, $recaptchaToken) )
         {
