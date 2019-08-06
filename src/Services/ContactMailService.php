@@ -17,13 +17,14 @@ class ContactMailService
     public function sendMail($mailTemplate, $mailData = [])
     {
         $recipient = $mailData['recipient'];
-
+        $this->getLogger(__METHOD__)->error("recipient", $recipient);
+        $this->getLogger(__METHOD__)->error("recipient is null", is_null( $recipient ));
         if ( is_null( $recipient ) )
         {
             /** @var TemplateConfigService $templateConfigService */
             $templateConfigService = pluginApp(TemplateConfigService::class);
             $recipient = $templateConfigService->get('contact.shop_mail');
-            $this->getLogger(__METHOD__)->error("recipient", $recipient);
+
         }
 
         if(!strlen($recipient) || !strlen($mailTemplate))
