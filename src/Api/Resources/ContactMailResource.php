@@ -88,6 +88,7 @@ class ContactMailResource extends ApiResource
             "secret" => $secret,
             "response" => $token
         ];
+        $this->getLogger(__METHOD__)->error("params", $params);
         $options = array(
             CURLOPT_URL => "https://www.google.com/recaptcha/api/siteverify?secret=$secret&response=$token",
             CURLOPT_RETURNTRANSFER => true,
@@ -106,6 +107,7 @@ class ContactMailResource extends ApiResource
         curl_close($ch);
 
         $result = json_decode($content, true);
+        $this->getLogger(__METHOD__)->error("result", $result);
 
         return $result["success"]
             && (!array_key_exists('score', $result)
