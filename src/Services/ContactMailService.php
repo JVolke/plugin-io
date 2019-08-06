@@ -8,9 +8,12 @@ use Plenty\Plugin\Templates\Twig;
 use IO\Services\TemplateConfigService;
 use IO\Validators\Customer\ContactFormValidator;
 use Plenty\Plugin\Translation\Translator;
+use Plenty\Plugin\Log\Loggable;
+
 
 class ContactMailService
 {
+    use Loggable;
     public function sendMail($mailTemplate, $mailData = [])
     {
         $recipient = $mailData['recipient'];
@@ -20,13 +23,14 @@ class ContactMailService
             /** @var TemplateConfigService $templateConfigService */
             $templateConfigService = pluginApp(TemplateConfigService::class);
             $recipient = $templateConfigService->get('contact.shop_mail');
+            $this->getLogger(__METHOD__)->error("recipient", $recipient);
         }
 
         if(!strlen($recipient) || !strlen($mailTemplate))
         {
             return false;
         }
-        
+
         /** @var Twig */
         $twig = pluginApp(Twig::class);
 
@@ -34,12 +38,12 @@ class ContactMailService
             $mailTemplate,
             $mailData
         );
-        
+
         if(!strlen($mailBody))
         {
             return false;
         }
-        
+
         /** @var MailerContract $mailer */
         $mailer = pluginApp(MailerContract::class);
 
