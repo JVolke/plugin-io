@@ -51,16 +51,16 @@ class ContactMailResource extends ApiResource
         $recaptchaSecret = $this->templateConfigService->get('global.google_recaptcha_secret');
         $recaptchaApiKey = $this->templateConfigService->get('global.google_recaptcha_api_key');
         $this->getLogger(__METHOD__)->error("Request:", $this->request->all());
-        $this->getLogger(__METHOD__)->error("Verifiy:", $this->verifyRecaptcha($recaptchaSecret, $recaptchaToken));
         if ( ($recaptchaToken !== $recaptchaApiKey) && !$this->verifyRecaptcha($recaptchaSecret, $recaptchaToken) )
         {
+            $this->getLogger(__METHOD__)->error("First If");
             return $this->response->create("", ResponseCode::BAD_REQUEST);
         }
         $response = $this->contactMailService->sendMail(
             $mailTemplate,
             $this->request->all()
         );
-
+        $this->getLogger(__METHOD__)->error("Response", $response);
         if($response)
         {
             return $this->response->create($response, ResponseCode::CREATED);
