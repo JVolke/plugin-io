@@ -2,7 +2,6 @@
 
 namespace IO\Services;
 
-use Plenty\Plugin\Log\Loggable;
 use Plenty\Plugin\Mail\Contracts\MailerContract;
 use Plenty\Plugin\Mail\Models\ReplyTo;
 use Plenty\Plugin\Templates\Twig;
