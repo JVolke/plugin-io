@@ -11,7 +11,6 @@ use IO\Api\ApiResource;
 use IO\Api\ApiResponse;
 use IO\Api\ResponseCode;
 use IO\Services\ContactMailService;
-use Plenty\Plugin\Log\Loggable;
 
 
 
@@ -21,7 +20,6 @@ use Plenty\Plugin\Log\Loggable;
  */
 class ContactMailResource extends ApiResource
 {
-  use Loggable;
 
     private $contactMailService;
 
@@ -52,14 +50,12 @@ class ContactMailResource extends ApiResource
 
         if ( !$this->verifyRecaptcha($recaptchaSecret, $recaptchaToken) )
         {
-            $this->getLogger(__METHOD__)->error("First If");
-            return $this->response->create("", ResponseCode::BAD_REQUEST);
+                return $this->response->create("", ResponseCode::BAD_REQUEST);
         }
         $response = $this->contactMailService->sendMail(
             $mailTemplate,
             $this->request->all()
         );
-        $this->getLogger(__METHOD__)->error("Response", $response);
         if($response)
         {
             return $this->response->create($response, ResponseCode::CREATED);
@@ -86,7 +82,6 @@ class ContactMailResource extends ApiResource
             "secret" => $secret,
             "response" => $token
         ];
-        $this->getLogger(__METHOD__)->error("params", $params);
         $options = array(
             CURLOPT_URL => "https://www.google.com/recaptcha/api/siteverify?secret=$secret&response=$token",
             CURLOPT_RETURNTRANSFER => true,
@@ -105,7 +100,6 @@ class ContactMailResource extends ApiResource
         curl_close($ch);
 
         $result = json_decode($content, true);
-        $this->getLogger(__METHOD__)->error("result", $result);
 
         return $result["success"]
             && (!array_key_exists('score', $result)
