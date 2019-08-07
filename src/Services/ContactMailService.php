@@ -2,11 +2,10 @@
 
 namespace IO\Services;
 
+use Plenty\Plugin\Log\Loggable;
 use Plenty\Plugin\Mail\Contracts\MailerContract;
 use Plenty\Plugin\Mail\Models\ReplyTo;
 use Plenty\Plugin\Templates\Twig;
-use IO\Services\TemplateConfigService;
-use IO\Validators\Customer\ContactFormValidator;
 use Plenty\Plugin\Translation\Translator;
 use Plenty\Plugin\Log\Loggable;
 
@@ -14,11 +13,12 @@ use Plenty\Plugin\Log\Loggable;
 class ContactMailService
 {
     use Loggable;
+
     public function sendMail($mailTemplate, $mailData = [])
     {
         $recipient = $mailData['recipient'];
-        $this->getLogger(__METHOD__)->error("recipient is null", strlen( $recipient ));
-        if ( !strlen( $recipient ) )
+
+        if ( !strlen($recipient) )
         {
             /** @var TemplateConfigService $templateConfigService */
             $templateConfigService = pluginApp(TemplateConfigService::class);
@@ -28,6 +28,7 @@ class ContactMailService
 
         if(!strlen($recipient) || !strlen($mailTemplate))
         {
+            $this->getLogger(__CLASS__)->error("IO::Debug.ContactMailService_noRecipient");
             return false;
         }
 
@@ -41,6 +42,7 @@ class ContactMailService
 
         if(!strlen($mailBody))
         {
+            $this->getLogger(__CLASS__)->error("IO::Debug.ContactMailService_noMailContent");
             return false;
         }
 
