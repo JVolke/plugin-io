@@ -44,6 +44,7 @@ class ContactMailService
             $this->getLogger(__CLASS__)->error("IO::Debug.ContactMailService_noMailContent");
             return false;
         }
+        $this->getLogger(__CLASS__)->error("MailData", $mailData);
 
         /** @var MailerContract $mailer */
         $mailer = pluginApp(MailerContract::class);
