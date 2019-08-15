@@ -44,7 +44,6 @@ class ContactMailService
             $this->getLogger(__CLASS__)->error("IO::Debug.ContactMailService_noMailContent");
             return false;
         }
-        $this->getLogger(__CLASS__)->error("MailData", $mailData);
 
         /** @var MailerContract $mailer */
         $mailer = pluginApp(MailerContract::class);
@@ -67,7 +66,13 @@ class ContactMailService
             ]
         );
 
-        $mailer->sendHtml($mailBody, $recipient, $subject, $mailData['cc'] ?? [], $mailData['bcc'] ?? [], $replyTo);
+        try
+        {
+            $mailer->sendHtml($mailBody, $recipient, $subject, $mailData['cc'] ?? [], $mailData['bcc'] ?? [], $replyTo);
+        }catch(\Exception $exception)
+        {
+            return false;
+        }
         return true;
     }
 }
