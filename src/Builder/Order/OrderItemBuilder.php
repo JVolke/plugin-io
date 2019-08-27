@@ -90,14 +90,14 @@ class OrderItemBuilder
         $maxVatRate      = 0;
 
         $itemsWithoutStock = [];
-        
+
         foreach($items as $item)
 		{
             if($maxVatRate < $item['vat'])
             {
                 $maxVatRate = $item['vat'];
             }
-            
+
             try
             {
                 array_push($orderItems, $this->basketItemToOrderItem($item, $basket->basketRebate));
@@ -115,15 +115,15 @@ class OrderItemBuilder
         {
             /** @var BasketService $basketService */
             $basketService = pluginApp(BasketService::class);
-            
+
             foreach($itemsWithoutStock as $itemWithoutStock)
             {
                 $updatedItem = array_shift(array_filter($items, function($filterItem) use ($itemWithoutStock) {
                     return $filterItem['id'] == $itemWithoutStock['item']['id'];
                 }));
-         
+
                 $quantity = $itemWithoutStock['stockNet'];
-                
+
                 if($quantity <= 0 && (int)$updatedItem['id'] > 0)
                 {
                     $basketService->deleteBasketItem($updatedItem['id']);
@@ -134,11 +134,15 @@ class OrderItemBuilder
                     $basketService->updateBasketItem($updatedItem['id'], $updatedItem);
                 }
             }
-            
+
             throw pluginApp(BasketItemCheckException::class, [BasketItemCheckException::NOT_ENOUGH_STOCK_FOR_ITEM]);
         }
-        
+
 		$shippingAmount = $basket->shippingAmount;
+		if ($basket->shippingDeleteByCoupon)
+		{
+			$shippingAmount = $basket->couponDiscount;
+		}
 
 		// add shipping costs
         $shippingCosts = [
@@ -196,17 +200,17 @@ class OrderItemBuilder
         $checkStockBasketItem->orderRowId  = $basketItem['orderRowId'];
         $checkStockBasketItem->quantity    = $basketItem['quantity'];
         $checkStockBasketItem->id          = $basketItem['id'];
-        
+
         /** @var Dispatcher $eventDispatcher */
         $eventDispatcher = pluginApp(Dispatcher::class);
         $eventDispatcher->fire(pluginApp(BeforeBasketItemToOrderItem::class, [$checkStockBasketItem]));
-	    
+
         $basketItemProperties = [];
         if(count($basketItem['basketItemOrderParams']))
         {
             /** @var OrderPropertyFileService $orderPropertyFileService */
             $orderPropertyFileService = pluginApp(OrderPropertyFileService::class);
-            
+
             foreach($basketItem['basketItemOrderParams'] as $property)
             {
                 if($property['type'] == 'file')
@@ -239,14 +243,14 @@ class OrderItemBuilder
         {
             $rebate += $basketDiscount;
         }
-        
+
         $priceOriginal = $basketItem['price'];
 		if ( $this->customerService->showNetPrices() )
         {
             $priceOriginal = $basketItem['price'] * (100.0 + $basketItem['vat']) / 100.0;
         }
         $priceOriginal -= $attributeTotalMarkup;
-        
+
 		$properties = [];
 		if($basketItem['inputLength'] > 0)
         {
