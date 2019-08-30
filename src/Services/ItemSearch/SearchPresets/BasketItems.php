@@ -26,7 +26,7 @@ class BasketItems implements SearchPreset
         $quantities     = $options['quantities'];
 
         /** @var VariationSearchFactory $searchFactory */
-        $searchFactory = pluginApp( VariationSearchFactory::class );
+        $searchFactory = pluginApp( VariationSearchFactory::class )
             ->withResultFields(
                 ResultFieldTemplate::load( ResultFieldTemplate::TEMPLATE_BASKET_ITEM )
             );
