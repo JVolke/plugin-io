@@ -20,6 +20,7 @@ use IO\Services\ItemSearch\Factories\VariationSearchFactory;
 use IO\Constants\LogLevel;
 use Plenty\Modules\Order\Shipping\Contracts\EUCountryCodesServiceContract;
 use Plenty\Plugin\Log\Loggable;
+use IO\Services\ItemWishListService;
 
 /**
  * Class BasketService
@@ -85,8 +86,8 @@ class BasketService
         $this->checkout             = $checkout;
         $this->vatService           = $vatService;
         $this->customerService      = $customerService;
-        $this->basketRepository = $basketRepository;
-        $this->couponService = $couponService;
+        $this->basketRepository     = $basketRepository;
+        $this->couponService        = $couponService;
 
         if(!$vatInitService->isInitialized())
         {
@@ -106,6 +107,9 @@ class BasketService
 
         /** @var DetermineShopCountryContract $determineShopCountry */
         $determineShopCountry = pluginApp(DetermineShopCountryContract::class);
+
+        /** @var ItemWishListService $wishListService */
+        $wishListService = pluginApp(ItemWishListService::class);
 
         $basket = $this->getBasket()->toArray();
 
@@ -133,6 +137,8 @@ class BasketService
         $basket["isExportDelivery"] = $euCountryService->isExportDelivery($basket["shippingCountryId"]);
         $basket["shopCountryId"] = $determineShopCountry->getCountryId();
 
+        $basket["itemWishListIds"] = $wishListService->getItemWishList();
+
         return $basket;
     }
 
@@ -142,8 +148,14 @@ class BasketService
      */
     public function getBasket(): Basket
     {
-        $basket = pluginApp(BasketRepositoryContract::class)->load();
-        $basket->currency = pluginApp(CheckoutService::class)->getCurrency();
+        /** @var BasketRepositoryContract $basketRepository */
+        $basketRepository = pluginApp(BasketRepositoryContract::class);
+
+        /** @var CheckoutService $checkoutService */
+        $checkoutService = pluginApp(CheckoutService::class);
+
+        $basket = $basketRepository->load();
+        $basket->currency = $checkoutService->getCurrency();
         return $basket;
     }
 
@@ -220,15 +232,52 @@ class BasketService
                 $itemData = $basketItemData[$basketItem->variationId];
             }
 
+            $basketItemWithVariationData = $this->addVariationData($basketItem, $itemData);
+            $basketItemWithVariationData['basketItemOrderParams'] = $this->getSortedBasketItemOrderParams($basketItemWithVariationData);
+
             array_push(
                 $result,
-                $this->addVariationData($basketItem, $itemData)
+                $basketItemWithVariationData
             );
         }
 
         return array_map(function($basketItem) {
             return $this->reduceBasketItem($basketItem);
         }, $result);
+    }
+
+    public function getSortedBasketItemOrderParams($basketItem): array
+    {
+        $newParams = [];
+        if(!array_key_exists('basketItemOrderParams', $basketItem))
+        {
+            return [];
+        }
+
+        foreach ($basketItem['basketItemOrderParams'] as $param)
+        {
+            $propertyId = (int)$param['propertyId'];
+
+            foreach ($basketItem['variation']['data']['properties'] as $property)
+            {
+                if ($property['property']['id'] === $propertyId)
+                {
+                    $newParam = $param;
+                    $newParam['position'] = $property['property']['position'];
+                    $newParams[] = $newParam;
+                }
+            }
+        }
+
+        usort(
+            $newParams,
+            function($documentA, $documentB)
+            {
+                return $documentA['position'] - $documentB['position'];
+            }
+        );
+
+        return $newParams;
     }
 
     public function checkBasketItemsLang($template = '')

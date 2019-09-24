@@ -3,13 +3,14 @@
 namespace IO\Middlewares;
 
 use IO\Api\ResponseCode;
+use IO\Controllers\CategoryController;
 use IO\Extensions\Constants\ShopUrls;
 use IO\Helper\RouteConfig;
+use IO\Helper\Utils;
 use IO\Services\CountryService;
 use IO\Services\TemplateService;
 use IO\Services\WebstoreConfigurationService;
 use IO\Services\TemplateConfigService;
-
 use Plenty\Modules\System\Models\WebstoreConfiguration;
 use Plenty\Plugin\Http\Request;
 use Plenty\Plugin\Http\Response;
@@ -122,19 +123,20 @@ class Middleware extends \Plenty\Plugin\Middleware
             AuthGuard::redirect('/newsletter/subscribe/'.$authString.'/'.$newsletterEmailId);
         }
 
+        /** @var ShopUrls $shopUrls */
+        $shopUrls = pluginApp(ShopUrls::class);
+
         $orderShow = $request->get('OrderShow', '');
-        if(strlen($orderShow) && $orderShow == 'CancelNewsletter' && RouteConfig::isActive(RouteConfig::NEWSLETTER_OPT_OUT))
+        if(strlen($orderShow) && $orderShow == 'CancelNewsletter' && in_array(RouteConfig::NEWSLETTER_OPT_OUT, RouteConfig::getEnabledRoutes()) )
         {
-            AuthGuard::redirect('/newsletter/unsubscribe');
+            $folderId = $request->get('folderId', 0);
+            AuthGuard::redirect($shopUrls->newsletterOptOut, ['folderId' => $folderId]);
         }
 
         if ( RouteConfig::isActive(RouteConfig::SEARCH) && $request->get('ActionCall') == 'WebActionArticleSearch' )
         {
             AuthGuard::redirect('/search', ['query' => $request->get('Params')['SearchParam']]);
         }
-
-        /** @var ShopUrls $shopUrls */
-        $shopUrls = pluginApp(ShopUrls::class);
 
         if ($request->has('readonlyCheckout') || $request->getRequestUri() !== $shopUrls->checkout)
         {
@@ -155,19 +157,44 @@ class Middleware extends \Plenty\Plugin\Middleware
                 AuthGuard::redirect($confirmationRoute);
             }
         }
+        else if( in_array(RouteConfig::CONFIRMATION, RouteConfig::getEnabledRoutes())
+            && RouteConfig::getCategoryId(RouteConfig::CONFIRMATION) > 0 )
+        {
+            $orderId = $request->get('id', 0);
+            $orderAccessKey = $request->get('ak', '');
+
+            if(strlen($orderAccessKey) && (int)$orderId > 0)
+            {
+                $confirmationRoute = $shopUrls->confirmation.'?orderId='.$orderId.'&accessKey='.$orderAccessKey;
+                AuthGuard::redirect($confirmationRoute);
+            }
+        }
     }
 
     public function after(Request $request, Response $response):Response
     {
-        if ($response->status() == ResponseCode::NOT_FOUND)
+        if($response->status() == ResponseCode::NOT_FOUND)
         {
-            if(RouteConfig::isActive(RouteConfig::PAGE_NOT_FOUND) || self::$FORCE_404)
+            $routeActive = RouteConfig::isActive(RouteConfig::PAGE_NOT_FOUND);
+            $sbCategoryId = RouteConfig::getCategoryId(RouteConfig::PAGE_NOT_FOUND);
+
+            if($routeActive || $sbCategoryId > 0 || self::$FORCE_404)
             {
-                /** @var StaticPagesController $controller */
-                $controller = pluginApp(StaticPagesController::class);
+                if($sbCategoryId > 0)
+                {
+                    /** @var CategoryController $controller */
+                    $controller = pluginApp(CategoryController::class);
+                    $content = $controller->showCategoryById($sbCategoryId);
+                }
+                else
+                {
+                    /** @var StaticPagesController $controller */
+                    $controller = pluginApp(StaticPagesController::class);
+                    $content = $controller->showPageNotFound();
+                }
 
                 $response = $response->make(
-                    $controller->showPageNotFound(),
+                    $content,
                     ResponseCode::NOT_FOUND
                 );
                 $response->forceStatus(ResponseCode::NOT_FOUND);
@@ -189,7 +216,7 @@ class Middleware extends \Plenty\Plugin\Middleware
             $language = $webstoreConfig->defaultLanguage;
         }
 
-        if($language === pluginApp(SessionStorageService::class)->getLang())
+        if($language === Utils::getLang())
         {
             // language has not changed
             return;
