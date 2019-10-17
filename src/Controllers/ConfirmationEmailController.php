@@ -11,7 +11,6 @@ use IO\Services\UrlBuilder\UrlQuery;
  */
 class ConfirmationEmailController extends LayoutController
 {
-    use Loggable;
     /**
      * Prepare and render the data for the order confirmation
      * @return string
