@@ -369,7 +369,7 @@ class BasketService
 
             if ($sortOrderItems && array_key_exists($basketItem->variationId, $basketItemData))
             {
-                $arr['basketItemOrderParams'] = $this->getSortedBasketItemOrderParams($basketItemData[$basketItem->variationId]);
+                $arr['basketItemOrderParams'] = $this->getSortedBasketItemOrderParams($arr);
             }
 
             array_push(
@@ -726,23 +726,25 @@ class BasketService
         $result = [];
         foreach ($basketItems as $basketItem)
         {
-            $variation = $variationRepository->findById($basketItem->variationId);
             /**
              * @var Variation $variation
+             */
+            $variation = $variationRepository->findById($basketItem->variationId);
+
+            /**
+             * @var VariationDescription $texts
              */
             $texts = $authHelper->processUnguarded(function() use ($variationDescriptionRepository, $basketItem, $lang)
             {
                 return $variationDescriptionRepository->find($basketItem->variationId, $lang);
             });
-            /**
-             * @var VariationDescription $texts
-             */
 
             $result[$basketItem->variationId]['data']['variation']['name'] = $variation->name ?? '';
             $result[$basketItem->variationId]['data']['texts']['name1'] = $texts->name ?? '';
             $result[$basketItem->variationId]['data']['texts']['name2'] = $texts->name2 ?? '';
             $result[$basketItem->variationId]['data']['texts']['name3'] = $texts->name3 ?? '';
             $result[$basketItem->variationId]['data']['variation']['vatId'] = $variation->vatId ?? $variation->parent->vatId;
+            $result[$basketItem->variationId]['data']['properties'] = $variation->variationProperties->toArray();
         }
 
         return $result;
@@ -837,9 +839,12 @@ class BasketService
             "id"                    => $basketItem["id"],
             "quantity"              => $basketItem["quantity"],
             "price"                 => $basketItem["price"],
+            "itemId"                => $basketItem["itemId"],
             "variation"             => $basketItem["variation"],
             "variationId"           => $basketItem["variationId"],
-            "basketItemOrderParams" => $basketItem["basketItemOrderParams"] ?? []
+            "basketItemOrderParams" => $basketItem["basketItemOrderParams"] ?? [],
+            "inputLength"           => $basketItem["inputLength"] ?? 0,
+            "inputWidth"            => $basketItem["inputWidth"] ?? 0
         ];
     }
 }
