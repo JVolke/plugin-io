@@ -5,6 +5,7 @@ namespace IO\Services;
 use IO\Builder\Order\AddressType;
 use IO\Constants\SessionStorageKeys;
 use IO\Events\Checkout\CheckoutReadonlyChanged;
+use IO\Helper\ArrayHelper;
 use IO\Helper\LanguageMap;
 use IO\Helper\MemoryCache;
 use Plenty\Modules\Accounting\Contracts\AccountingLocationRepositoryContract;
@@ -165,30 +166,25 @@ class CheckoutService
      */
     public function getCurrency(): string
     {
-        return $this->fromMemoryCache(
-            "currency",
-            function() {
-                $currency = (string)$this->sessionStorage->getPlugin()->getValue(SessionStorageKeys::CURRENCY);
-                if ($currency === null || $currency === "") {
-                    /** @var SessionStorageService $sessionService */
-                    $sessionService = pluginApp(SessionStorageService::class);
+        $currency = (string)$this->sessionStorage->getPlugin()->getValue(SessionStorageKeys::CURRENCY);
+        if ($currency === null || $currency === '') {
+            /** @var SessionStorageService $sessionService */
+            $sessionService = pluginApp(SessionStorageService::class);
 
-                    /** @var WebstoreConfigurationService $webstoreConfig */
-                    $webstoreConfig = pluginApp(WebstoreConfigurationService::class);
+            /** @var WebstoreConfigurationService $webstoreConfig */
+            $webstoreConfig = pluginApp(WebstoreConfigurationService::class);
 
-                    $currency = 'EUR';
+            $currency = 'EUR';
 
-                    if (
-                        is_array($webstoreConfig->getWebstoreConfig()->defaultCurrencyList) &&
-                        array_key_exists($sessionService->getLang(), $webstoreConfig->getWebstoreConfig()->defaultCurrencyList)
-                    ) {
-                        $currency = $webstoreConfig->getWebstoreConfig()->defaultCurrencyList[$sessionService->getLang()];
-                    }
-                    $this->setCurrency($currency);
-                }
-                return $currency;
+            if (
+                is_array($webstoreConfig->getWebstoreConfig()->defaultCurrencyList) &&
+                array_key_exists($sessionService->getLang(), $webstoreConfig->getWebstoreConfig()->defaultCurrencyList)
+            ) {
+                $currency = $webstoreConfig->getWebstoreConfig()->defaultCurrencyList[$sessionService->getLang()];
             }
-        );
+            $this->setCurrency($currency);
+        }
+        return $currency;
     }
 
     /**
@@ -634,9 +630,10 @@ class CheckoutService
         if (is_null($billingAddressId) || (int)$billingAddressId <= 0)
         {
             $addresses = $this->customerService->getAddresses(AddressType::BILLING);
+            $addresses = ArrayHelper::toArray($addresses);
             if (is_array($addresses) && count($addresses) > 0)
             {
-                $billingAddressId = $addresses[0]->id;
+                $billingAddressId = $addresses[0]['id'];
                 $this->setBillingAddressId($billingAddressId);
             }
         }
