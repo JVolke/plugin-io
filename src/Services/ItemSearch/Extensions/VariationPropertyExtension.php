@@ -26,6 +26,7 @@ class VariationPropertyExtension implements ItemSearchExtension
                     //set the id of the property on the first level for frontend mapping
                     $test = $property['property']['id'];
                     $baseResult['documents'][$key]['data']['variationProperties'][$test] = $property;
+                    $baseResult['documents'][$key]['data']['variationProperties'][$test]['propertyId'] = $property['property']['id'];
                     unset($baseResult['documents'][$key]['data']['variationProperties'][$propertyKey]);
                 }
             }
