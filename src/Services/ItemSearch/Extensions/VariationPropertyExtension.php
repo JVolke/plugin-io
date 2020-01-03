@@ -11,7 +11,7 @@ class VariationPropertyExtension implements ItemSearchExtension
     {
         return null;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -24,11 +24,12 @@ class VariationPropertyExtension implements ItemSearchExtension
                 foreach($extensionDocument['data']['variationProperties'] as $propertyKey => $property)
                 {
                     //set the id of the property on the first level for frontend mapping
-                    $baseResult['documents'][$key]['data']['variationProperties'][$propertyKey]['propertyId'] = $property['property']['id'];
+                    $test = $property['property']['id'];
+                    $baseResult['documents'][$key]['data']['variationProperties'][$test]['propertyId'] = $property['property']['id'];
                 }
             }
         }
-        
+
         return $baseResult;
     }
 }
