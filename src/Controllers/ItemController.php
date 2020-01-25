@@ -54,10 +54,10 @@ class ItemController extends LayoutController
             'item' => SingleItem::getSearchFactory($itemSearchOptions),
             'variationAttributeMap' => VariationAttributeMap::getSearchFactory($itemSearchOptions)
         ];
-        
+
         /** @var TemplateConfigService $templateConfigService */
         $templateConfigService = pluginApp(TemplateConfigService::class);
-        
+
         if ($variationId > 0 && (int)$templateConfigService->get('item.show_please_select') == 1) {
             unset($itemSearchOptions['variationId']);
             $searches['dynamic'] = SingleItem::getSearchFactory($itemSearchOptions);
@@ -83,15 +83,12 @@ class ItemController extends LayoutController
 
         $shopBuilderRequest->setMainCategory($defaultCategory[0]['id']);
         $shopBuilderRequest->setMainContentType('singleitem');
-        if ($shopBuilderRequest->isShopBuilder()) {
-            /** @var VariationSearchResultFactory $searchResultFactory */
-            $searchResultFactory = pluginApp(VariationSearchResultFactory::class);
-            $itemResult['item'] = $searchResultFactory->fillSearchResults(
-                $itemResult['item'],
-                ResultFieldTemplate::get(ResultFieldTemplate::TEMPLATE_SINGLE_ITEM)
-            );
-        }
 
+        $searchResultFactory = pluginApp(VariationSearchResultFactory::class);
+        $itemResult['item'] = $searchResultFactory->fillSearchResults(
+            $itemResult['item'],
+            ResultFieldTemplate::get(ResultFieldTemplate::TEMPLATE_SINGLE_ITEM)
+        );
         if (empty($itemResult['item']['documents'])) {
             $this->getLogger(__CLASS__)->info(
                 "IO::Debug.ItemController_itemNotFound",
