@@ -83,12 +83,15 @@ class ItemController extends LayoutController
 
         $shopBuilderRequest->setMainCategory($defaultCategory[0]['id']);
         $shopBuilderRequest->setMainContentType('singleitem');
+        if ($shopBuilderRequest->isShopBuilder()) {
+            /** @var VariationSearchResultFactory $searchResultFactory */
+            $searchResultFactory = pluginApp(VariationSearchResultFactory::class);
+            $itemResult['item'] = $searchResultFactory->fillSearchResults(
+                $itemResult['item'],
+                ResultFieldTemplate::get(ResultFieldTemplate::TEMPLATE_SINGLE_ITEM)
+            );
+        }
 
-        $searchResultFactory = pluginApp(VariationSearchResultFactory::class);
-        $itemResult['item'] = $searchResultFactory->fillSearchResults(
-            $itemResult['item'],
-            ResultFieldTemplate::get(ResultFieldTemplate::TEMPLATE_SINGLE_ITEM)
-        );
         if (empty($itemResult['item']['documents'])) {
             $this->getLogger(__CLASS__)->info(
                 "IO::Debug.ItemController_itemNotFound",
