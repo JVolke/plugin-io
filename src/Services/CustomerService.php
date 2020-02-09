@@ -727,12 +727,13 @@ class CustomerService
     private function buildAddressEmailOptions(array $options = [], $isGuest = false, $addressData = []): array
     {
         if ($isGuest) {
-            /** @var SessionStorageService $sessionStorage */
-            $sessionStorage = pluginApp(SessionStorageService::class);
-            $email = $sessionStorage->getSessionValue(SessionStorageKeys::GUEST_EMAIL);
+            if (isset($addressData['email'])) {
 
-            if (!strlen($email)) {
-                throw new \Exception('no guest email address found', 11);
+                $email = $addressData['email'];
+                
+                if (!strlen($email)) {
+                    throw new \Exception('no guest email address found', 11);
+                }
             }
         } else {
             $email = $this->getContact()->email;
