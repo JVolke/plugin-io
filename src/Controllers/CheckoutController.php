@@ -45,7 +45,16 @@ class CheckoutController extends LayoutController
 
         if ( !$shopBuilderRequest->isShopBuilder() )
         {
-           if(!count($basketItemRepository->all()))
+            if( !$sessionStorage->getSessionValue("skipLogin") )
+            {
+                $this->getLogger(__CLASS__)->info("IO::Debug.CheckoutController_notLoggedIn");
+                AuthGuard::redirect(
+                    $shopUrls->login,
+                    ["backlink" => AuthGuard::getUrl()]
+                );
+            }
+
+            else if(!count($basketItemRepository->all()))
             {
                 $this->getLogger(__CLASS__)->info("IO::Debug.CheckoutController_emptyBasket");
                 AuthGuard::redirect($shopUrls->home, []);
