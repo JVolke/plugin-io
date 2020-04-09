@@ -2,11 +2,11 @@
 
 namespace IO\Services;
 
-use IO\Services\ItemSearch\Helper\SortingHelper;
-use IO\Services\ItemSearch\SearchPresets\LiveShoppingItems;
-use IO\Services\ItemSearch\Services\ItemSearchService;
 use Plenty\Modules\LiveShopping\Contracts\LiveShoppingRepositoryContract;
 use Plenty\Modules\LiveShopping\Models\LiveShopping;
+use Plenty\Modules\Webshop\ItemSearch\Helpers\SortingHelper;
+use Plenty\Modules\Webshop\ItemSearch\SearchPresets\LiveShoppingItems;
+use Plenty\Modules\Webshop\ItemSearch\Services\ItemSearchService;
 
 /**
  * Class LiveShoppingService
@@ -31,7 +31,6 @@ class LiveShoppingService
         $liveShopping = $liveShoppingRepo->getLiveShopping($liveShoppingId);
 
         $liveShoppingItem = [];
-        $liveShoppingData = [];
 
         if ($liveShopping instanceof LiveShopping) {
             $itemList = $this->getLiveShoppingVariations($liveShopping->itemId, $sorting);
@@ -48,19 +47,24 @@ class LiveShoppingService
             $this->checkStockLimit($liveShoppingData, $liveShoppingItem);
 
             unset($liveShoppingItem['stock'], $liveShoppingItem['variation']['stockLimitation']);
+
+            return [
+                'item' => $liveShoppingItem,
+                'liveShopping' => $liveShoppingData
+            ];
         }
 
-        return [
-            'item' => $liveShoppingItem,
-            'liveShopping' => $liveShoppingData
-        ];
+        return null;
     }
 
     public function getLiveShoppingVariations($itemId, $sorting)
     {
+        /** @var SortingHelper $sortingHelper */
+        $sortingHelper = pluginApp(SortingHelper::class);
+
         $itemSearchOptions = [
             'itemId' => $itemId,
-            'sorting' => SortingHelper::splitPathAndOrder($sorting)
+            'sorting' => $sortingHelper->splitPathAndOrder($sorting)
         ];
         /** @var ItemSearchService $itemSearchService */
         $itemSearchService = pluginApp(ItemSearchService::class);
@@ -94,6 +98,7 @@ class LiveShoppingService
 
         return $itemList;
     }
+
 
     /**
      * Check if item is limited to net stock and modify quantitySold to reflect the limited stock

@@ -9,6 +9,7 @@ use IO\Services\CategoryService;
 use IO\Services\CheckoutService;
 use IO\Services\ContactBankService;
 use IO\Services\ContactMailService;
+use IO\Services\ContactMapService;
 use IO\Services\CountryService;
 use IO\Services\CouponService;
 use IO\Services\CustomerService;
@@ -17,6 +18,7 @@ use IO\Services\FakerService;
 use IO\Services\ItemCrossSellingService;
 use IO\Services\ItemLastSeenService;
 use IO\Services\ItemListService;
+use IO\Services\ItemSearchAutocompleteService;
 use IO\Services\ItemService;
 use IO\Services\ItemWishListService;
 use IO\Services\LegalInformationService;
@@ -27,6 +29,7 @@ use IO\Services\OrderService;
 use IO\Services\OrderTotalsService;
 use IO\Services\PropertyFileService;
 use IO\Services\SalesPriceService;
+use IO\Services\SeoService;
 use IO\Services\SessionStorageService;
 use IO\Services\TagService;
 use IO\Services\TemplateService;
@@ -34,6 +37,9 @@ use IO\Services\UnitService;
 use IO\Services\UrlService;
 use IO\Services\UserDataHashService;
 use IO\Services\WebstoreConfigurationService;
+use Plenty\Modules\Webshop\Contracts\LocalizationRepositoryContract;
+use Plenty\Modules\Webshop\Contracts\SessionStorageRepositoryContract;
+use Plenty\Modules\Webshop\Contracts\WebstoreConfigurationRepositoryContract;
 
 class TwigServiceContainer
 {
@@ -82,6 +88,11 @@ class TwigServiceContainer
         return pluginApp(OrderService::class);
     }
 
+    public function getSessionStorageRepository(): SessionStorageRepositoryContract
+    {
+        return pluginApp(SessionStorageRepositoryContract::class);
+    }
+
     public function getSessionStorage(): SessionStorageService
     {
         return pluginApp(SessionStorageService::class);
@@ -112,6 +123,11 @@ class TwigServiceContainer
         return pluginApp(NotificationService::class);
     }
 
+    public function getWebstoreConfigurationRepository(): WebstoreConfigurationRepositoryContract
+    {
+        return pluginApp(WebstoreConfigurationRepositoryContract::class);
+    }
+
     public function getWebstoreConfig(): WebstoreConfigurationService
     {
         return pluginApp(WebstoreConfigurationService::class);
@@ -120,6 +136,11 @@ class TwigServiceContainer
     public function getLocalization(): LocalizationService
     {
         return pluginApp(LocalizationService::class);
+    }
+
+    public function getLocalizationRepository(): LocalizationRepositoryContract
+    {
+        return pluginApp(LocalizationRepositoryContract::class);
     }
 
     public function getCoupon(): CouponService
@@ -195,5 +216,20 @@ class TwigServiceContainer
     public function getFacet(): FacetService
     {
         return pluginApp(FacetService::class);
+    }
+
+    public function getContactMap(): ContactMapService
+    {
+        return pluginApp(ContactMapService::class);
+    }
+
+    public function getSearchAutocomplete()
+    {
+        return pluginApp(ItemSearchAutocompleteService::class);
+    }
+
+    public function getSEO(): SeoService
+    {
+        return pluginApp(SeoService::class);
     }
 }
