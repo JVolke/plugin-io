@@ -20,9 +20,11 @@ use IO\Extensions\Filters\URLFilter;
 use IO\Extensions\Filters\ItemImagesFilter;
 use Plenty\Modules\Webshop\ItemSearch\Helpers\ResultFieldTemplate;
 use Plenty\Modules\Webshop\ItemSearch\Services\ItemSearchService;
+use Plenty\Plugin\Log\Loggable;
 
 class LocalizedOrder extends ModelWrapper
 {
+    use Loggable;
     /**
      * The OrderItem types that will be wrapped. All other OrderItems will be stripped from the order.
      */
@@ -71,6 +73,7 @@ class LocalizedOrder extends ModelWrapper
      */
     public static function wrap($order, ...$data)
     {
+        $start = microtime(true);
         if ($order == null) {
             return null;
         }
@@ -269,6 +272,12 @@ class LocalizedOrder extends ModelWrapper
         /** @var OrderTotalsService $orderTotalsService */
         $orderTotalsService = pluginApp(OrderTotalsService::class);
         $instance->highlightNetPrices = $orderTotalsService->highlightNetPrices($instance->order);
+
+        $end = microtime(true);
+        $this->getLogger(__CLASS__)->error(__METHOD__ , [
+            "Time" => $end-$start
+        ]
+        );
 
         return $instance;
     }

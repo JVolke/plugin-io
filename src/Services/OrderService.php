@@ -144,10 +144,15 @@ class OrderService
      */
     public function placeOrder(): LocalizedOrder
     {
+        $start = microtime(true);
         /** @var WebshopOrderRepositoryContract $webshopOrderRepository */
         $webshopOrderRepository = pluginApp(WebshopOrderRepositoryContract::class);
         $order = $webshopOrderRepository->placeOrder();
-
+        $end = microtime(true);
+        $this->getLogger(__CLASS__)->error(__METHOD__ , [
+            "Time" => $end-$start
+        ]
+        );
         return LocalizedOrder::wrap($order, Utils::getLang());
     }
 
