@@ -44,6 +44,8 @@ class PlaceOrderController extends LayoutController
         SessionStorageRepositoryContract $sessionStorageRepository,
         ShopUrls $shopUrls
     ) {
+        $start = microtime(true);
+
         try {
             /** @var Dispatcher $eventDispatcher */
             $eventDispatcher = pluginApp(Dispatcher::class);
@@ -148,7 +150,10 @@ class PlaceOrderController extends LayoutController
                 $url .= '?' . $paramString;
             }
         }
-
+        $end = \microtime(true);
+        $this->getLogger(__METHOD__)->error(__CLASS__."::".__METHOD__, [
+            "Time" => $end - $start
+        ]);
         return $this->urlService->redirectTo($url);
     }
 
