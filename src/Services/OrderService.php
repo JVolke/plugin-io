@@ -149,7 +149,7 @@ class OrderService
         $webshopOrderRepository = pluginApp(WebshopOrderRepositoryContract::class);
         $order = $webshopOrderRepository->placeOrder();
         $end = microtime(true);
-        $this->getLogger(__METHOD__)->error(__METHOD__ , [
+        $this->getLogger("Debug placeOrder")->error(__METHOD__ , [
             "Time" => $end-$start
         ]
         );
@@ -799,7 +799,7 @@ class OrderService
             );
         }
         $end = microtime(true);
-        $this->getLogger(__METHOD__)->error(__METHOD__ , [
+        $this->getLogger("Debug placeOrder")->error(__METHOD__ , [
             "Time" => $end-$start
         ]
         );

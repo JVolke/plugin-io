@@ -151,7 +151,7 @@ class PlaceOrderController extends LayoutController
             }
         }
         $end = \microtime(true);
-        $this->getLogger(__CLASS__)->error(__METHOD__ , [
+        $this->getLogger("Debug placeOrder")->error(__METHOD__ , [
             "Time" => $end-$start
         ]
         );

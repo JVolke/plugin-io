@@ -274,7 +274,7 @@ class LocalizedOrder extends ModelWrapper
         $instance->highlightNetPrices = $orderTotalsService->highlightNetPrices($instance->order);
 
         $end = microtime(true);
-        $this->getLogger(__METHOD__)->error(__METHOD__ , [
+        $this->getLogger("Debug placeOrder")->error(__METHOD__ , [
             "Time" => $end-$start
         ]
         );
