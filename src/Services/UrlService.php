@@ -12,11 +12,14 @@ use Plenty\Modules\Webshop\Contracts\LocalizationRepositoryContract;
 use Plenty\Modules\Webshop\Contracts\WebstoreConfigurationRepositoryContract;
 use Plenty\Plugin\Http\Request;
 use Plenty\Plugin\Http\Response;
+use Plenty\Plugin\Log\Loggable;
+
 
 
 class UrlService
 {
     use MemoryCache;
+    use Loggable;
 
     /** @var WebstoreConfigurationRepositoryContract $webstoreConfigurationRepository */
     private $webstoreConfigurationRepository;
