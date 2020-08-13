@@ -274,6 +274,7 @@ class UrlService
      */
     public function redirectTo($redirectURL)
     {
+        $start = microtime(true);
         if (strpos($redirectURL, 'http:') !== 0 && strpos($redirectURL, 'https:') !== 0) {
             /** @var UrlQuery $query */
             $query = pluginApp(UrlQuery::class, ['path' => $redirectURL]);
@@ -284,6 +285,8 @@ class UrlService
 
         /** @var Response $response */
         $response = pluginApp(Response::class);
+        $end = microtime(true);
+        $this->getLogger(__METHOD__)->error(__CLASS__."::".__METHOD__." Time: ".$end-$start);
         return $response->redirectTo($redirectURL, Response::HTTP_MOVED_PERMANENTLY);
     }
 
