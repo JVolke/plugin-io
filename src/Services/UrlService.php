@@ -286,7 +286,10 @@ class UrlService
         /** @var Response $response */
         $response = pluginApp(Response::class);
         $end = microtime(true);
-        $this->getLogger(__METHOD__)->error(__CLASS__."::".__METHOD__." Time: ".$end-$start);
+        $this->getLogger(__CLASS__)->error(__METHOD__ , [
+            "Time" => $end-$start
+        ]
+        );
         return $response->redirectTo($redirectURL, Response::HTTP_MOVED_PERMANENTLY);
     }
 
