@@ -759,6 +759,7 @@ class OrderService
      */
     public function complete($order)
     {
+        $start = microtime(true);
         if ($order instanceof Order && $order->id > 0) {
             try {
                 $params = [
@@ -797,6 +798,11 @@ class OrderService
                 $order->id
             );
         }
+        $end = microtime(true);
+        $this->getLogger(__CLASS__)->error(__METHOD__ , [
+            "Time" => $end-$start
+        ]
+        );
     }
 
     private function handleThrowable(\Throwable $throwable, $message = null)
