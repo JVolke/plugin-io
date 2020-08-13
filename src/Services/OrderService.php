@@ -153,13 +153,8 @@ class OrderService
             "Time" => $end-$start
         ]
         );
-        $start2= microtime(true);
         return LocalizedOrder::wrap($order, Utils::getLang());
-        $end2= microtime(true);
-        $this->getLogger("Debug placeOrder")->error(__METHOD__." after localized Order" , [
-            "Time" => $end2-$start2
-        ]
-        );
+   
     }
 
     /**
