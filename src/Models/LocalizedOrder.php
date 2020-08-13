@@ -24,7 +24,6 @@ use Plenty\Plugin\Log\Loggable;
 
 class LocalizedOrder extends ModelWrapper
 {
-    use Loggable;
     /**
      * The OrderItem types that will be wrapped. All other OrderItems will be stripped from the order.
      */
@@ -274,7 +273,7 @@ class LocalizedOrder extends ModelWrapper
         $instance->highlightNetPrices = $orderTotalsService->highlightNetPrices($instance->order);
 
         $end = microtime(true);
-        $this->getLogger("Debug placeOrder")->error(__METHOD__ , [
+        Loggable::getLogger("Debug placeOrder")->error(__METHOD__ , [
             "Time" => $end-$start
         ]
         );
