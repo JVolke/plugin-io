@@ -72,7 +72,6 @@ class LocalizedOrder extends ModelWrapper
      */
     public static function wrap($order, ...$data)
     {
-        $start = microtime(true);
         if ($order == null) {
             return null;
         }
@@ -271,12 +270,6 @@ class LocalizedOrder extends ModelWrapper
         /** @var OrderTotalsService $orderTotalsService */
         $orderTotalsService = pluginApp(OrderTotalsService::class);
         $instance->highlightNetPrices = $orderTotalsService->highlightNetPrices($instance->order);
-
-        $end = microtime(true);
-        Loggable::getLogger("Debug placeOrder")->error(__METHOD__ , [
-            "Time" => $end-$start
-        ]
-        );
 
         return $instance;
     }
