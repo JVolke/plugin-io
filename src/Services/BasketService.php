@@ -180,7 +180,7 @@ class BasketService
         $basket["shopCountryId"] = $determineShopCountry->getCountryId();
 
         $basket["itemWishListIds"] = $wishListService->getItemWishList();
-
+        $this->getLogger(__METHOD__)->error("BasketService", $basket);
         return $basket;
     }
 
