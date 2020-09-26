@@ -296,7 +296,8 @@ class IORouteServiceProvider extends RouteServiceProvider
         $this->getLogger(__METHOD__)->error("Check Route", [
             "isRouteActive" => RouteConfig::isActive(RouteConfig::PASSWORD_RESET),
             "RouteConfig" => RouteConfig::PASSWORD_RESET,
-            "routes" => $config->get("IO.routing.enabled_routes")
+            "routes" => $config->get("IO.routing.enabled_routes"),
+            "routesexplode" => explode(", ", $config->get("IO.routing.enabled_routes"))
         ]);
         // PASSWORD RESET
         if( RouteConfig::isActive(RouteConfig::PASSWORD_RESET) )
