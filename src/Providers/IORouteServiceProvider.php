@@ -9,6 +9,7 @@ use IO\Helper\Utils;
 use Plenty\Plugin\RouteServiceProvider;
 use Plenty\Plugin\Routing\Router;
 use Plenty\Plugin\Routing\ApiRouter;
+use Plenty\Plugin\Log\Loggable;
 
 /**
  * Class IORouteServiceProvider
@@ -16,6 +17,8 @@ use Plenty\Plugin\Routing\ApiRouter;
  */
 class IORouteServiceProvider extends RouteServiceProvider
 {
+    use Loggable;
+
 	public function register()
 	{
 	}
@@ -287,7 +290,10 @@ class IORouteServiceProvider extends RouteServiceProvider
         {
             $router->get('return-confirmation', 'IO\Controllers\OrderReturnConfirmationController@showOrderReturnConfirmation');
         }
-
+        $this->getLogger(__METHOD__)->error("Check Route", [
+            "isRouteActive" => RouteConfig::isActive(RouteConfig::PASSWORD_RESET),
+            "RouteConfig" => RouteConfig::PASSWORD_RESET
+        ]);
         // PASSWORD RESET
         if( RouteConfig::isActive(RouteConfig::PASSWORD_RESET) )
         {
