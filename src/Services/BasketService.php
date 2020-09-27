@@ -295,9 +295,18 @@ class BasketService
         return $newParams;
     }
 
+    /**
+     * @param string $language
+     */
     public function checkBasketItemsLang($language = '')
     {
         $basketItems = $this->getBasketItemsRaw();
+
+        // Don't check if no basket items.
+        if (count($basketItems) <= 0) {
+            return;
+        }
+
         $basketItemData = $this->getBasketItemData($basketItems, $language);
         $basketItems = $this->addVariationData($basketItems, $basketItemData, true);
 
@@ -647,11 +656,8 @@ class BasketService
      */
     public function updateBasketItem(int $basketItemId, array $data): array
     {
-        $basket = $this->getBasket();
         $data['id'] = $basketItemId;
-        $basketItem = $this->getBasketItem($basketItemId);
         try {
-            $this->couponService->validateBasketItemUpdate($basket, $data, $basketItem);
             $this->basketItemRepository->updateBasketItem($basketItemId, $data);
         } catch (BasketItemQuantityCheckException $e) {
             $this->getLogger(__CLASS__)->warning(
@@ -717,12 +723,6 @@ class BasketService
      */
     public function deleteBasketItem(int $basketItemId)
     {
-        $basket = $this->getBasket();
-        $basketItem = $this->getBasketItem($basketItemId);
-
-        // Validate and on fail, remove coupon
-        $this->couponService->validateBasketItemDelete($basket, $basketItem);
-
         $this->basketItemRepository->removeBasketItem($basketItemId);
     }
 
